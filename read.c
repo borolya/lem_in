@@ -13,6 +13,75 @@ int count_split(char **str)
 	return (count);
 }
 
+int take_name(char *str, t_room *room)
+{
+	int count;
+
+	count = 0;
+	while (!str[count] && str[count] != ' ')
+		count++;
+	if (!(room->name = malloc(sizeof(char) * (count + 1))))
+		return (-1);//exit
+	ft_strncpy(room->name, str, count);
+	return (count);
+}
+
+t_room *take_room(char *str)
+{
+	int i;
+	int count_space;
+	t_room *room;
+
+	room = ft_memalloc(sizeof(t_room));
+	if (room == NULL)
+		return (NULL);
+	count_space = 0;
+	i = take_name(str, room);
+	if (i < 0)
+		return (NULL);
+	i++;
+	room->x = ft_atoi(str + i);
+	while (str[i] != '\0' && str[i] != ' ')
+		i++;
+	room->y = ft_atoi(str + i);
+	room->start = 0;
+	room->finish = 0;
+	return (room);
+}
+
+int check_room(char *str)
+{
+	int i;
+	int tmp;
+
+	i = 0;
+	while(str[i] != '\0' && str[i] != ' ')
+		i++;
+	if (i < 1)
+		return (0);
+	tmp = 0;
+	while(str[i] && str[i] != ' ')
+	{
+		if (str[i] > '9' || str[i] < '0')
+			return (0);
+		tmp++;
+	}
+	if (tmp < 1)
+		return (0);
+	tmp = 0;
+	while(str[i] && str[i] != ' ')
+	{
+		if (str[i] > '9' || str[i] < '0')
+			return (0);
+		tmp++;
+	}
+	if (tmp < 1)
+		return (0);
+	if (str[i] != '\0')
+		return (0);
+	return (1);
+}
+
 int read(int fd, t_farm *farm)
 {
 	char *str;
@@ -23,47 +92,57 @@ int read(int fd, t_farm *farm)
 	int finish;
 	t_room *room;
 	t_room *start;
+	int i;
 
 	if (get_next_line(fd, &str) != 1)
 		return(-1);
-	split = ft_split(str, ' ');
-	if (count_split(split) != 1)
-		return (-1);
-	farm->aunts = ft_atoi(split[0]);
+	
+	//take_aunts
+	i = 0;
+	while (str[i])
+	{
+		if (str[i] > '9' || str[i] < '0')
+			return(-1);
+		i++;
+	}
+	farm->aunts = ft_atoi(str);
 	if (farm->aunts < 1)
 		return (-1);
+	free(str);
+	//
+	
 	start = 0;
 	finish = 0;
 	read_room = 1;
 	while (get_next_line(fd, &str) && read_room)
 	{
-	//	split = t_split(str, ' ');
-	//	count = count_split(split);
 		if (!check_comment(str))
 		{
-			if(ft_strequ(str, "##start"))
+			if (ft_strequ(str, "##start"))
 			{
 				if (start)
 					return (-1);
-				if (!(room = add_room(str))//addromm
+				free(str);
+				if (get_next_line(fd, &str) != 1)
 					return (-1);
-				room->start = 1;
-				ft_add_list(start, room);
+				if (!check_room(str))
+					return (-1);
+				room = take_room(str);
+				if (!check_uniq(start, room))
+					return (-1);
+				ft_lstadd(&start, room);
 				start = 1;
 			}
 			else if (ft_strequ(str, "##finish"))
 			{
-				if (finish)
-					return (-1);
-				if (!(room = add_room(str)))
-					return (-1);
-				room->finish = 1;
-				ft_add_list(start, room);
-				finish = 1;
+				//the same like start
 			}
-			else if (add_room)
+			else if (check_room(str))
 			{
-				/* code */
+				room = take_room(str);
+				if (!check_uniq(start, room))
+					return (-1);
+				ft_lstadd(&start, room);
 			}
 			else
 			{
@@ -73,9 +152,10 @@ int read(int fd, t_farm *farm)
 		}
 		free(str);
 	}
+	if (!start || !finish)
+		return (-1);
 	//start ,finish
-
-
+	/*
 	while (get_next_line(fd, &str))
 	{
 		if (!check_comment)
@@ -85,4 +165,5 @@ int read(int fd, t_farm *farm)
 		}
 		free(str);
 	}
+	*/
 }
