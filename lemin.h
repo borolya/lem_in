@@ -1,10 +1,16 @@
 #include "libft.h"
 
+#ifndef ERROR 
+    #define ERROR write(2, "Error\n", 6); exit(1);
+#endif
+
 typedef struct s_farm
 {
 	int aunts;
-	t_list *rooms;
-	int **links;
+    int count_rooms;
+	t_list *lst_rooms;
+    t_room *arrray_rooms;
+	int **links_tab;
 } t_farm;
 
 typedef struct s_room
@@ -14,6 +20,7 @@ typedef struct s_room
 	int y;
     int start;
     int finish;
+    int *link;
 }   t_room;
 
 typedef struct s_links

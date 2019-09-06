@@ -3,12 +3,12 @@
 
 int check_comment(char *str)
 {
-    if (str[0] == '#' && (str[1] == '\0' || str[1] != '#'))
-        return (1);
-    return (0);
+	if (str[0] == '#' && (str[1] == '\0' || str[1] != '#'))
+		return (1);
+	return (0);
 }
 
-int take_aunts(char *str, t_farm *farm)
+void take_aunts(char *str, t_farm *farm)
 {
 	int i;
 
@@ -16,13 +16,12 @@ int take_aunts(char *str, t_farm *farm)
 	while (str[i])
 	{
 		if (str[i] > '9' || str[i] < '0')
-			return (-1);
+			ERROR;
 		i++;
 	}
 	farm->aunts = ft_atoi(str);
 	if (farm->aunts < 1)
-		return (-1);
-	return (1);
+		ERROR;
 }
 
 int ft_count_rooms(t_list *alst)
@@ -47,7 +46,7 @@ void write_list(t_list *alst)
 	while (alst)
 	{
 		room = alst->content;
-		printf("name = |%s|", room->name);
+		printf("name = |%s| ", room->name);
 		printf("x = %d y = %d \n", room->x, room->y);
 		alst = alst->next;
 	}
@@ -61,6 +60,7 @@ void write_table(t_links *adja_table, int count_rooms)
 	while (i < count_rooms)
 	{
 		printf("name = %s ", adja_table[i].name);
+		j = 0;
 		while (j < count_rooms)
 		{
 			printf("%d ", adja_table[i].array[j]);
@@ -79,24 +79,27 @@ int read_file(int fd, t_farm *farm)
 	int finish;
 	t_room *room;
 	t_list *alst;
-	int i;
-	int count_rooms;
-	t_links *adja_table;
-	t_links tmp;
+	//int i;
+	//int count_rooms;
+	//t_links *adja_table;
+	//t_links *links;
 
 	if (get_next_line(fd, &str) != 1)
 		return (-1);
+		
 	while (check_comment(str) && get_next_line(fd, &str))
 	{}
-	if (take_aunts(str, farm) == -1)
-		return (-1);//free farm, str
+	//if (take_aunts(str, farm) == -1)
+	//	return (-1);//free farm, str
 	free(str);
 	start = 0;
 	finish = 0;
 	read_room = 1;
 	alst = NULL;
+   
 	while (get_next_line(fd, &str) && read_room)
 	{
+		printf("str = |%s|\n", str);
 		if (!check_comment(str))
 		{
 			if (ft_strequ(str, "##start"))
@@ -134,10 +137,10 @@ int read_file(int fd, t_farm *farm)
 					return (-1);
 				//ft_lstadd(&start, room);
 				finish = 1;
+				//write(1, "add finish\n", 11);
 			}
 			else if (check_room(str))
 			{
-				
 				room = take_room(str);
 				if (!check_uniq(alst, room))
 					return (-1);
@@ -148,9 +151,11 @@ int read_file(int fd, t_farm *farm)
 			}
 			else if (check_link(str))
 			{
-				if (!start || !finish)
-					return (-1);
+				//if (!start || !finish)
+				//	return (-1);
 				write_list(alst);
+				
+				/*
 				read_room = 0;
 				count_rooms = ft_count_rooms(alst);
 				printf("count_rooms = %d \n", count_rooms);
@@ -161,9 +166,9 @@ int read_file(int fd, t_farm *farm)
 				while (alst)
 				{
 					room = alst->content;
-					tmp = adja_table[i];
-					tmp.array = ft_memalloc(sizeof(int) * count_rooms);
-					tmp.name = room->name; 
+					links = adja_table + i * sizeof(t_links);
+					links->array = ft_memalloc(sizeof(int) * count_rooms);
+					links->name = room->name;
 					i++;
 					alst = alst->next;
 				}
@@ -171,10 +176,14 @@ int read_file(int fd, t_farm *farm)
 				{
 					write(1, "tut\n", 4);
 					return (-1);
-				}
+				}*/
 			}
+			
 			else
+			{  
+				printf("bad_string = |%s|\n", str); 
 				return (-1);
+			}
 		}	
 		free(str);
 	}

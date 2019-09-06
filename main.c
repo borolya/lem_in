@@ -15,10 +15,12 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 
+
+#include <stdio.h>
 int main(int argc, char **argv)
 {
     t_farm farm;
-	t_links table;
+	//t_links table;
 	int fd;
 
 	if (argc == 1)
@@ -26,6 +28,7 @@ int main(int argc, char **argv)
     else
 		fd = open(argv[1], O_RDONLY);
 	//farm = malloc(sizeof(t_farm));
+   // printf("fd = %d", fd);
     if (read_file(fd, &farm) == -1)
 		write (1, "bad file\n", 9);
 	else

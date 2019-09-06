@@ -3,22 +3,7 @@
 
 
 #include <stdio.h>
-int take_name(char *str, t_room *room)
-{
-	int count;
 
-	count = 0;
-	while (str[count] && str[count] != ' ')
-		count++;
-	
-	if (!(room->name = malloc(sizeof(char) * (count + 1))))
-		return (-1);//exit
-	//printf("count = %d\n", count);
-	ft_strncpy(room->name, str, count);
-	room->name[count] = '\0';
-	//printf("name = |%s|", room->name);
-	return (count);
-}
 
 int check_room(char *str)
 {
@@ -107,26 +92,35 @@ int push_to_list(t_list **alst, t_room *room)
 	return (0);
 }
 
-int fill_adja_table(char *str, t_links *table, int count_room)
+int fill_adja_table(char *str, t_links *table, int count_rooms)
 {
 	int i;
 	int j;
 	int count_letters;
+    unsigned int *array;
 
 	i = 0;
 	count_letters = 0;
 	while (str[count_letters] != '-')
 		count_letters++;
-	while (ft_strnequ(str, table[i].name, count_letters) && i < count_room)
+    write(1, "tut\n", 4);
+	while (!ft_strnequ(str, table[i].name, count_letters) && i < count_rooms)
 		i++;
-	if (i == count_room)
+	if (i == count_rooms)
+    {
+        write(1, "not_found1\n", 11);
 		return (-1);
-	j = 0;
-	while (ft_strnequ(str + count_letters + 1, table[j].name, ft_strlen(str) - count_letters) && j < count_room)
+    }
+    j = 0;
+	while (!ft_strequ(str + count_letters + 1, table[j].name) && j < count_rooms)
 		j++;
-	if (j == count_room)
+	if (j == count_rooms)
 		return (-1);
-	table[i].array[j] = 1;
-	table[j].array[i] = 1;
-	return (0);
+    //table[i].array[j] = 1;
+	array = table[i].array;
+    array[j] = 1;
+    //(table[j].array)[i] = 1;
+	array = table[j].array;
+    array[i] = 1;
+    return (0);
 }
