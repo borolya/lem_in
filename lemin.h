@@ -1,26 +1,35 @@
 #include "libft.h"
 
 #ifndef ERROR 
-    #define ERROR write(2, "Error\n", 6); exit(1);
+    #define ERROR write(2, "Error\n", 6);/ exit(1);
 #endif
+
+typedef struct s_tree
+{
+    t_room *content;
+    t_tree *left;
+    t_tree *right;
+    t_tree *p;
+}   t_tree;
 
 typedef struct s_farm
 {
 	int aunts;
     int count_rooms;
 	t_list *lst_rooms;
-    t_room *arrray_rooms;
-	int **links_tab;
+    t_room *array_rooms;
+	unsigned int **links_tab;// change bit
 } t_farm;
 
 typedef struct s_room
 {
+    int ind;
 	char *name;
 	int x;
 	int y;
     int start;
     int finish;
-    int *link;
+    int *links_array;
 }   t_room;
 
 typedef struct s_links

@@ -15,7 +15,7 @@ int take_name(char *str, t_room *room)
 	return (count + 1);
 }
 
-t_room *take_room(char *str)
+t_room *take_room(char *str, t_farm *farm)
 {
 	t_room *room;
 	int i;
@@ -31,19 +31,21 @@ t_room *take_room(char *str)
 	room->y = ft_atoi(str + i);
 	if (room->y < 0)
 		ERROR;
-	room->link_array = NULL;
+	room->links_array = NULL;
 	room->start = 0;
 	room->finish = 0;
+	room->ind = -1;
 	return (room);
 }
 
-char *read_rooms(int fd, t_farm *farm, t_command *command, t_list **alst)
+char *read_rooms(int fd, t_farm *farm, t_command *command, t_tree **root)
 {
 	char *str;
 	int start;
 	int finish;
 	t_room *room;
 
+	farm->count_rooms = 0;
 	while (get_next_line(fd, &str) && str[0] != '\0')
 	{
 		if (!check_comment(str))
@@ -52,10 +54,9 @@ char *read_rooms(int fd, t_farm *farm, t_command *command, t_list **alst)
 				take_command(command);
 			else if (check_room(str))
 			{
-				room = take_room(str);
-				if (!check_uniq(*alst, room))
-					ERROR;
-				push_to_list(alst, room);
+				room = take_room(str, farm);
+				tree_insert(root, find_parant(*root, room), room);
+				farm->count_rooms++;
 			}
 			else
 			{
@@ -69,24 +70,78 @@ char *read_rooms(int fd, t_farm *farm, t_command *command, t_list **alst)
 	return (NULL);
 }
 
+void initial_ltab(t_farm *farm)
+{
+	int i;
+
+	if (!(farm->links_tab = ft_memalloc(sizeof(unsigned int*) * farm->count_rooms)))
+		exit(-1);
+	i = 0;
+	while (i < farm->count_rooms)
+	{
+		if (!(farm->links_tab[i] = ft_memalloc(sizeof(unsigned int) * farm->count_rooms)))
+		i++;
+	}
+
+}
+
+void initia_array_rooms(t_farm *farm)
+{
+	if (!(farm->array_rooms = ft_memalloc(sizeof(t_room) * farm->count_rooms)))
+		exit(-1);
+	farm->count_rooms = 0;
+}
+
+t_room search(char *str, t_farm *farm)
+{
+
+}
+
+void find_link(char *str, t_farm *farm)
+{
+	t_room room1;
+	t_room room2;
+
+	room1 = search(str, farm);
+	room2 = search(ft_strchr(str, '-') + 1, farm);
+
+}
+
 void read_data(int fd, t_farm *farm, int add_command)
 {
     char *str;
-	t_list *alst;
-	t_command command;
+	t_tree *root;
+	t_command command;//add command
+	//correct name
 
     while (get_next_line(fd, &str) && check_comment(str))
 		free(str);
 	take_aunts(str, farm);
 	free(str);
-	alst = NULL;
+	root = NULL;
+	str = read_rooms(fd, farm, &root, command);
 	if (!check_link(str))
 		ERROR;
-	str = read_rooms(fd, farm, &alst, command);
-	farm->count_rooms = ft_count_rooms(alst);
 	if (farm->count_rooms < 1)
 		ERROR;
+	initial_ltab(farm);
+	initial_array_room(farm);
+	find_link(str, farm);
+	free(str);
+	while(get_next_line(fd, str))
+	{
+		if(!check_comment(str))
+		{
+			if (check_command)//?
+			{
+
+			}
+			if (check_link(str))
+			{
+				find_link(str, farm);
+			}
+		}
+	}
 	
-	
-	
+	 
 }

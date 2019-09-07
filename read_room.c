@@ -63,33 +63,45 @@ t_room *take_room(char *str)
 	return (room);
 }
 
-int check_uniq(t_list *list, t_room *room)
+t_tree *find_parant(t_tree *root, t_room *room)//exit(1) if dublicate
 {
-	t_room *tmp;
-	while (list != NULL)
+	t_tree *parant;
+
+	parant = NULL;
+	while (root != NULL)
 	{
-		tmp = list->content;
-		if (ft_strequ(tmp->name, room->name) ||
-			(tmp->x == room->x && tmp->y == room->y))
-			return (0);
-		list = list->next;
+		parant = root;
+		if (ft_strcmp(room->name, root->content->name) == 0)
+			ERROR;
+		else if (ft_strcmp(room->name, root->content->name) > 0)
+			root = root->right;
+		else
+			root = root->left;
 	}
-	return (1);
+	return (parant);
 }
 
-int push_to_list(t_list **alst, t_room *room)
+void tree_insert(t_tree **root, t_tree *parant, t_room *room)
 {
-	t_list *new;
+	t_tree *new;
 
-	if (room == NULL)
-		return (-1);
-	if (!(new = malloc(sizeof(t_list))))
-		return (-1);
+	//if (room == NULL)
+	//	exit(-1);
+	if (!(new = ft_memalloc(sizeof(t_tree))))
+		exit(-1);
 	new->content = room;
-	new->content_size = sizeof(t_list);
-	new->next = NULL;
-	ft_lstadd(alst, new);
-	return (0);
+	new->right = NULL;
+	new->left = NULL;
+	new->p = NULL;
+	if (parant == NULL)
+	{
+		*root = new;
+		return;
+	}
+	if (ft_strcmp(new->content->name, parant->content->name) > 0)
+		parant->right = new;
+	else
+		parant->left = new;
 }
 
 int fill_adja_table(char *str, t_links *table, int count_rooms)
