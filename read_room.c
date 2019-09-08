@@ -72,7 +72,10 @@ t_tree *find_parant(t_tree *root, t_room *room)//exit(1) if dublicate
 	{
 		parant = root;
 		if (ft_strcmp(room->name, root->content->name) == 0)
+		{
+			fr_putstr("dublicate_name\n");
 			ERROR;
+		}
 		else if (ft_strcmp(room->name, root->content->name) > 0)
 			root = root->right;
 		else
