@@ -1,9 +1,6 @@
 #include "lemin.h"
 #include "libft.h"
-
-
 #include <stdio.h>
-
 
 int check_room(char *str)
 {
@@ -13,22 +10,22 @@ int check_room(char *str)
 	i = 0;
 	while (str[i] != '\0' && str[i] != ' ')
 		i++;
-	if (i < 1)
+	if (i < 1 || str[i] == '\0')
 		return (0);
 	tmp = 0;
 	i++;
-	while(str[i] && str[i] != ' ')
+	while (str[i] != '\0' && str[i] != ' ')
 	{
 		if (str[i] > '9' || str[i] < '0')
 			return (0);
 		tmp++;
 		i++;
 	}
-	if (tmp < 1)
+	if (tmp < 1 || str[i] == '\0')
 		return (0);
 	tmp = 0;
-	i++;
-	while (str[i] && str[i] != ' ')
+    i++;
+	while (str[i] != '\0' && str[i] != ' ')
 	{
 		if (str[i] > '9' || str[i] < '0')
 			return (0);
@@ -41,101 +38,48 @@ int check_room(char *str)
 		return (0);
 	return (1);
 }
-
-t_room *take_room(char *str)
+int check_command(char *str)
 {
-	int i;
+	if (str[0] == '#' && str[1] == '#')
+		return(1);
+	return (0);
+}
+
+t_room *ft_room(t_farm *farm, t_tree **root, char *str)
+{
 	t_room *room;
 
-	room = ft_memalloc(sizeof(t_room));
-	if (room == NULL)
-		return (NULL);
-	i = take_name(str, room);
-	if (i < 0)
-		return (NULL);
-	i++;
-	room->x = ft_atoi(str + i);
-	while (str[i] != '\0' && str[i] != ' ')
-		i++;
-	room->y = ft_atoi(str + i);
-	room->start = 0;
-	room->finish = 0;
+	room = take_room(str);
+	if (search_coordinates(room->x, room->y, *root))
+		ft_error("duble_coord");
+	tree_insert(root, find_parent(*root, room), room);
+	farm->count_rooms++;
 	return (room);
 }
 
-t_tree *find_parant(t_tree *root, t_room *room)//exit(1) if dublicate
+char *read_rooms(int fd, t_farm *farm, t_command *command, t_tree **root)
 {
-	t_tree *parant;
+	char *str;
 
-	parant = NULL;
-	while (root != NULL)
+	command->start = 0;
+	command->finish = 0;
+	farm->count_rooms = 0;
+	while (get_next_line(fd, &str) && str[0] != '\0')
 	{
-		parant = root;
-		if (ft_strcmp(room->name, root->content->name) == 0)
+		if (!check_comment(str))
 		{
-			fr_putstr("dublicate_name\n");
-			ERROR;
+			if (check_command(str))
+				take_command(command, str, farm, root, fd);
+			else if (check_room(str))
+				ft_room(farm, root, str);
+            else
+			{
+				if (!command->start || !command->finish)
+					ft_error("not_command st or fin\n");
+				return (str);
+			}
 		}
-		else if (ft_strcmp(room->name, root->content->name) > 0)
-			root = root->right;
-		else
-			root = root->left;
+		free(str);
 	}
-	return (parant);
-}
-
-void tree_insert(t_tree **root, t_tree *parant, t_room *room)
-{
-	t_tree *new;
-
-	//if (room == NULL)
-	//	exit(-1);
-	if (!(new = ft_memalloc(sizeof(t_tree))))
-		exit(-1);
-	new->content = room;
-	new->right = NULL;
-	new->left = NULL;
-	new->p = NULL;
-	if (parant == NULL)
-	{
-		*root = new;
-		return;
-	}
-	if (ft_strcmp(new->content->name, parant->content->name) > 0)
-		parant->right = new;
-	else
-		parant->left = new;
-}
-
-int fill_adja_table(char *str, t_links *table, int count_rooms)
-{
-	int i;
-	int j;
-	int count_letters;
-    unsigned int *array;
-
-	i = 0;
-	count_letters = 0;
-	while (str[count_letters] != '-')
-		count_letters++;
-    write(1, "tut\n", 4);
-	while (!ft_strnequ(str, table[i].name, count_letters) && i < count_rooms)
-		i++;
-	if (i == count_rooms)
-    {
-        write(1, "not_found1\n", 11);
-		return (-1);
-    }
-    j = 0;
-	while (!ft_strequ(str + count_letters + 1, table[j].name) && j < count_rooms)
-		j++;
-	if (j == count_rooms)
-		return (-1);
-    //table[i].array[j] = 1;
-	array = table[i].array;
-    array[j] = 1;
-    //(table[j].array)[i] = 1;
-	array = table[j].array;
-    array[i] = 1;
-    return (0);
+	return (str);
 }

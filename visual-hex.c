@@ -10,12 +10,12 @@ void write_map(t_farm *farm)
 	int win_w;
 	void *mlx_ptr;
 	void *mlx_win;
-    void *img;
-    char *img_data;
+	void *img;
+	char *img_data;
 
 	int bits_per_pixel;
-    int size_line;
-    int endian;
+	int size_line;
+	int endian;
 
 
 	int i;
@@ -60,6 +60,6 @@ int main(int argc, char **argv)
 
 	read_data(0, farm);
 	write_map(farm);
-	do_instructions(0, farm);
+	//do_instructions(0, farm);
 	return (0);
 }
