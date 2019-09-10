@@ -73,18 +73,18 @@ void initial_array_rooms(t_farm *farm, int *ind)
 
 	if (!(farm->array_rooms = ft_memalloc(sizeof(t_room) * farm->count_rooms)))
 		exit(-1);
-	farm->array_rooms[0] = *(farm->start);
     room = farm->start;
     room->ind = 0;
 	if (!(room->links_array = malloc(sizeof(int) * farm->count_rooms)))
 			exit(-1);
 	init_links_array(room->links_array, farm->count_rooms);
-	farm->array_rooms[1] = *(farm->finish);
+	farm->array_rooms[0] = *(farm->start);
     room = farm->finish;
-    room->ind = 1;
+    room->ind = 0;
 	if (!(room->links_array = malloc(sizeof(int) * farm->count_rooms)))
 			exit(-1);
 	init_links_array(room->links_array, farm->count_rooms);
+	farm->array_rooms[1] = *(farm->finish);
 	*ind = 2;
 }
 void init_links_array(int *array, int size)
@@ -125,7 +125,7 @@ void find_link(char *str, t_farm *farm, int *ind)
 	separator++;
 	room2 = ft_search(separator, farm, ft_strlen(separator), ind);
     ft_putstr(room2->name);
-    ft_putstr(ft_itoa(room2->ind));
+    ft_putstr(ft_itoa(room1->ind));
     write(1, "\n", 1);
 	if (ft_strequ(room1->name, room2->name))
 	{
