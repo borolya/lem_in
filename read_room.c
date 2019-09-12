@@ -52,6 +52,14 @@ t_room *ft_room(t_farm *farm, t_tree **root, char *str)
 	room = take_room(str);
 	if (search_coordinates(room->x, room->y, *root))
 		ft_error("duble_coord");
+    if (room->x > farm->max_x)
+        farm->max_x = room->x;
+    if (room->y > farm->max_y)
+        farm->max_y = room->y;
+    if (room->x < farm->min_x)
+        farm->min_x = room->x;
+    if (room->y < farm->min_y)
+        farm->min_y = room->y;
 	tree_insert(root, find_parent(*root, room), room);
 	farm->count_rooms++;
 	return (room);
@@ -64,6 +72,10 @@ char *read_rooms(int fd, t_farm *farm, t_command *command, t_tree **root)
 	command->start = 0;
 	command->finish = 0;
 	farm->count_rooms = 0;
+    farm->max_x = -2147483648;
+    farm->max_y = -2147483648;
+    farm->min_x = 2147483647;
+    farm->min_x = 2147483647;
 	while (get_next_line(fd, &str) && str[0] != '\0')
 	{
 		if (!check_comment(str))

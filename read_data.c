@@ -71,20 +71,20 @@ void initial_array_rooms(t_farm *farm, int *ind)
 {
     t_room *room;
 
-	if (!(farm->array_rooms = ft_memalloc(sizeof(t_room) * farm->count_rooms)))
+	if (!(farm->array_rooms = ft_memalloc(sizeof(t_room*) * farm->count_rooms)))
 		exit(-1);
     room = farm->start;
     room->ind = 0;
 	if (!(room->links_array = malloc(sizeof(int) * farm->count_rooms)))
 			exit(-1);
 	init_links_array(room->links_array, farm->count_rooms);
-	farm->array_rooms[0] = *(farm->start);
+	farm->array_rooms[0] = room;
     room = farm->finish;
-    room->ind = 0;
+    room->ind = 1;
 	if (!(room->links_array = malloc(sizeof(int) * farm->count_rooms)))
 			exit(-1);
 	init_links_array(room->links_array, farm->count_rooms);
-	farm->array_rooms[1] = *(farm->finish);
+	farm->array_rooms[1] = room;
 	*ind = 2;
 }
 void init_links_array(int *array, int size)
@@ -118,24 +118,23 @@ void find_link(char *str, t_farm *farm, int *ind)
 
     write(1, "link  ", 5);
 	separator = ft_strchr(str, '-');
-	room1 = ft_search(str, farm, (int)(separator - str), ind);
+	room1 = ft_search_init_array(str, farm, (int)(separator - str), ind);
     ft_putstr(room1->name);
     ft_putstr(ft_itoa(room1->ind));
     write(1, " ", 1);
 	separator++;
-	room2 = ft_search(separator, farm, ft_strlen(separator), ind);
+	room2 = ft_search_init_array(separator, farm, ft_strlen(separator), ind);
     ft_putstr(room2->name);
     ft_putstr(ft_itoa(room1->ind));
     write(1, "\n", 1);
 	if (ft_strequ(room1->name, room2->name))
 	{
-		write(1, "loop\n", 5);
-		ft_error();;	
+		ft_error("loop\n");	
 	}
 	if (farm->links_tab[room1->ind][room2->ind] == 1)
 	{
-		ft_putstr("dublicate_links\n");
-		ft_error();
+
+		ft_error("dublicate_links\n");
 	}
 	farm->links_tab[room1->ind][room2->ind] = 1;
 	farm->links_tab[room2->ind][room1->ind] = 1;
@@ -157,6 +156,7 @@ void take_command(t_command *command, char *str, t_farm *farm, t_tree **root, in
 		if (!check_room(tmp))
 			ft_error("need room after start\n");
 		farm->start = ft_room(farm, root, tmp);
+        farm->start->start = 1;
 	}
 	else if (ft_strequ(str, "##finish"))
 	{
@@ -168,5 +168,6 @@ void take_command(t_command *command, char *str, t_farm *farm, t_tree **root, in
 		if (!check_room(tmp))
 			ft_error("need room after finish\n");
 		farm->finish = ft_room(farm, root, tmp);
+        farm->finish->finish = 1;
 	}
 }

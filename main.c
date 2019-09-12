@@ -46,7 +46,7 @@ void ft_write_links_tab(t_farm *farm)
 void ft_write_array_rooms(t_farm *farm)
 {
 	int i;
-	t_room room;
+	t_room *room;
 	int j;
 
 	i = 0;
@@ -54,11 +54,11 @@ void ft_write_array_rooms(t_farm *farm)
 	{
 		room = farm->array_rooms[i];
 		printf("\nname=%s, ind = %d, x = %d, y = %d, start = %d, finish = %d\nlinks_array", 
-			room.name, room.ind, room.x, room.y, room.start, room.finish);
+			room->name, room->ind, room->x, room->y, room->start, room->finish);
 		j = 0;
 		while(j < farm->count_rooms)
 		{
-			printf("%d ", room.links_array[j]);
+			printf("%d ", room->links_array[j]);
 			j++;
 		}
 		i++;

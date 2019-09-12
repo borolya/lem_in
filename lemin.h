@@ -1,8 +1,22 @@
 #include "libft.h"
 
-#ifndef ERROR 
-# define ERROR write(2, "Error\n", 6);/ exit(1);
+#ifndef IMG_W 
+# define IMG_W 300
 #endif
+
+#ifndef IMG_H 
+# define IMG_H 300
+#endif
+
+#ifndef SQ_SIZE 
+# define SQ_SIZE 7
+#endif
+
+typedef struct s_point
+{
+    int x;
+    int y;
+}   t_point;
 
 typedef struct s_room
 {
@@ -13,6 +27,7 @@ typedef struct s_room
 	int start;
 	int finish;
 	int *links_array;
+	int aunt;
 }   t_room;
 
 typedef struct s_tree
@@ -31,7 +46,11 @@ typedef struct s_farm
 	t_room *start;
 	t_room *finish;
 	t_tree *root;
-	t_room *array_rooms;
+	t_room **array_rooms;
+	int max_x;
+	int max_y;
+	int min_x;
+	int min_y;
 	unsigned int **links_tab;// change bit
 } t_farm;
 
@@ -67,7 +86,7 @@ int		check_link(char *str);
 
 t_tree	*find_parent(t_tree *root, t_room *room);
 t_room	*ft_room(t_farm *farm, t_tree **root, char *str);
-t_room	*ft_search(char *str, t_farm *farm, int n, int *ind);
+t_room	*ft_search_init_array(char *str, t_farm *farm, int n, int *ind);
 int		search_coordinates(int x, int y, t_tree *root);
 
 void	tree_insert(t_tree **root, t_tree *parant, t_room *room);

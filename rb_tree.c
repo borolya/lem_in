@@ -69,7 +69,7 @@ t_tree *find_parent(t_tree *root, t_room *room)//exit(1) if dublicate
 	return (parent);
 }
 
-t_room *ft_search(char *str, t_farm *farm, int n, int *ind)
+t_room *ft_search_init_array(char *str, t_farm *farm, int n, int *ind)
 {
 	t_tree *tree;
 	t_room *room;
@@ -90,20 +90,13 @@ t_room *ft_search(char *str, t_farm *farm, int n, int *ind)
 	if (room->ind < 0)
 	{
 		room->ind = *ind;
-		farm->array_rooms[*ind] = *room;
-		(*ind)++;
 		if (!(room->links_array = malloc(sizeof(int) * farm->count_rooms)))
 			exit(-1);
 		init_links_array(room->links_array, farm->count_rooms);
+        farm->array_rooms[*ind] = room;
+		(*ind)++;
 	}
-	//ft_putstr(room->name);
-	//write(1, "\n", 1);
 	return(room);
-	/*	
-	tree->content->ind = farm->count_rooms;
-	farm->links_tab[farm->count_rooms] = 
-	farm->count_rooms++;
-	*/
 }
 
 void tree_insert(t_tree **root, t_tree *parant, t_room *room)
