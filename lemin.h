@@ -1,11 +1,11 @@
 #include "libft.h"
 
 #ifndef IMG_W 
-# define IMG_W 300
+# define IMG_W 400
 #endif
 
 #ifndef IMG_H 
-# define IMG_H 300
+# define IMG_H 400
 #endif
 
 #ifndef SQ_SIZE 
@@ -84,6 +84,8 @@ int     push_to_list(t_list **alst, t_room *room);
 int		fill_adja_table(char *str, t_links *table, int count_room);
 int		check_link(char *str);
 
+
+void    read_data(int fd, t_farm *farm);
 t_tree	*find_parent(t_tree *root, t_room *room);
 t_room	*ft_room(t_farm *farm, t_tree **root, char *str);
 t_room	*ft_search_init_array(char *str, t_farm *farm, int n, int *ind);

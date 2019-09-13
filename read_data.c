@@ -120,20 +120,18 @@ void find_link(char *str, t_farm *farm, int *ind)
 	separator = ft_strchr(str, '-');
 	room1 = ft_search_init_array(str, farm, (int)(separator - str), ind);
     ft_putstr(room1->name);
+    ft_putstr("  ");
     ft_putstr(ft_itoa(room1->ind));
     write(1, " ", 1);
 	separator++;
 	room2 = ft_search_init_array(separator, farm, ft_strlen(separator), ind);
     ft_putstr(room2->name);
-    ft_putstr(ft_itoa(room1->ind));
+    ft_putstr(ft_itoa(room2->ind));
     write(1, "\n", 1);
 	if (ft_strequ(room1->name, room2->name))
-	{
 		ft_error("loop\n");	
-	}
 	if (farm->links_tab[room1->ind][room2->ind] == 1)
 	{
-
 		ft_error("dublicate_links\n");
 	}
 	farm->links_tab[room1->ind][room2->ind] = 1;
@@ -158,15 +156,15 @@ void take_command(t_command *command, char *str, t_farm *farm, t_tree **root, in
 		farm->start = ft_room(farm, root, tmp);
         farm->start->start = 1;
 	}
-	else if (ft_strequ(str, "##finish"))
+	else if (ft_strequ(str, "##end"))
 	{
         if (command->finish)
-            ft_error("dbl_finish\n");
+            ft_error("dbl_end\n");
 		command->finish = 1;
 		while (get_next_line(fd, &tmp) && check_comment(str))
 			free(tmp);
 		if (!check_room(tmp))
-			ft_error("need room after finish\n");
+			ft_error("need room after end\n");
 		farm->finish = ft_room(farm, root, tmp);
         farm->finish->finish = 1;
 	}

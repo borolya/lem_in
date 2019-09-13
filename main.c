@@ -24,7 +24,6 @@ void ft_error(char *error_name)
 }
 
 #include <stdio.h>
-
 void ft_write_links_tab(t_farm *farm)
 {
 	int i;
@@ -43,6 +42,7 @@ void ft_write_links_tab(t_farm *farm)
 		i++;
 	}
 }
+
 void ft_write_array_rooms(t_farm *farm)
 {
 	int i;
@@ -50,20 +50,23 @@ void ft_write_array_rooms(t_farm *farm)
 	int j;
 
 	i = 0;
-	while ( i < farm->count_rooms)
+	while (i < farm->count_rooms)
 	{
 		room = farm->array_rooms[i];
+        if (room == NULL)
+            break;
 		printf("\nname=%s, ind = %d, x = %d, y = %d, start = %d, finish = %d\nlinks_array", 
 			room->name, room->ind, room->x, room->y, room->start, room->finish);
 		j = 0;
-		while(j < farm->count_rooms)
+		while (j < farm->count_rooms)
 		{
-			printf("%d ", room->links_array[j]);
+			printf(" |%d| ", room->links_array[j]);
 			j++;
 		}
 		i++;
 	}
 }
+
 void read_data(int fd, t_farm *farm)
 {
 	char *str;
@@ -104,6 +107,7 @@ void read_data(int fd, t_farm *farm)
 	//ft_free(root)
 }
 
+/*
 int main(int argc, char **argv)
 {
 	t_farm farm;
@@ -116,3 +120,4 @@ int main(int argc, char **argv)
 	read_data(fd, &farm);
 	return (0);
 }
+*/
