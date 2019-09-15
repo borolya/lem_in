@@ -41,9 +41,8 @@ typedef struct s_tree
 
 typedef struct s_farm
 {
-	int aunts;
+	int count_aunts;
 	int *aunt;
-    
     int count_rooms;
 	t_room *start;
 	t_room *finish;
