@@ -24,10 +24,10 @@ typedef struct s_room
 	char *name;
 	int x;
 	int y;
-	int start;
-	int finish;
+	int start : 1;
+	int finish : 1;
 	int *links_array;
-	int aunt;
+	int aunts;
 }   t_room;
 
 typedef struct s_tree
@@ -42,7 +42,9 @@ typedef struct s_tree
 typedef struct s_farm
 {
 	int aunts;
-	int count_rooms;
+	int *aunt;
+    
+    int count_rooms;
 	t_room *start;
 	t_room *finish;
 	t_tree *root;
@@ -52,6 +54,7 @@ typedef struct s_farm
 	int min_x;
 	int min_y;
 	unsigned int **links_tab;// change bit
+
 } t_farm;
 
 typedef struct s_command
