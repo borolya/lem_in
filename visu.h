@@ -32,7 +32,7 @@ typedef struct s_visu
 {
 	void *mlx_ptr;
 	void *win_ptr;
-	int action : 1;
+	int step;
 	t_list *links;
 	t_farm *farm;
 	t_img aunt;
