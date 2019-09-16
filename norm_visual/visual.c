@@ -55,6 +55,7 @@ int step_init(int keycode, t_visu *visu)
 	char *save;
 	char *str;
 	t_list *list;
+	int flag;
 
 	if (keycode == 53)
 	{
@@ -73,27 +74,30 @@ int step_init(int keycode, t_visu *visu)
 				ft_lstadd(&(visu->links), list);
 			}
 			free(save);
-			visu->action = 1;
+			//change count aunt in room
+			visu->step = STEPS;
 		}
-		else
-		{
-			
-		}
+		else 
+			visu->step = 0;
 	}
 }
 
 void draw_aunt(t_link *link, t_visu *visu)
 {
-	if (link->step > STEPS)
-	{
-		free(link);
-		link == NULL;
-		return ;
-	}
 	mlx_put_image_to_window(visu->mlx_ptr, visu->win_ptr, visu->aunt, link->p->x, link->p->y);
 	link->p->x += link->delta->x;
 	link->p->y = link->delta->y;
-	
+	if (visu->step == 0)
+	{
+		free(link);
+		link == NULL;
+	}
+}
+
+void draw_hex(t_visu *visu)
+{
+	//add list of rooms and aunt
+	mlx_put_image_to_window(visu->mlx_ptr, visu->win_ptr, visu->hex.ptr, 50, 50);
 }
 
 int dinamic(t_visu *visu)
@@ -101,24 +105,22 @@ int dinamic(t_visu *visu)
 	t_list *link;
 
 	draw_hex(visu);
-	if (visu->action == 1)
+	if (visu->step >= 0)
 	{
 		link = visu->links;
 		mlx_clear_window(visu->mlx_ptr, visu->win_ptr);
 		draw_hex(visu);
 		while (link != NULL)
 		{
-			change_coord_aunt(link->content);
+			draw_aunt(link->content, visu);
 			link = link->next;
 		}
-		visu->action = 0;
+		visu->step--;
+		if (visu->step < 0)
+			//ft_dellst(visu->links);
 	}
 }
 
-void hex_img(t_img *hex, t_visu *visu)
-{
-
-}
 
 void imag_initialization(t_img *hex, t_img *aunt, t_visu *visu)
 {
@@ -140,6 +142,7 @@ void imag_initialization(t_img *hex, t_img *aunt, t_visu *visu)
 		i++;
 	}
 }
+
 int main()
 {
 	t_farm farm;

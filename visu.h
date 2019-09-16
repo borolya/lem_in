@@ -6,6 +6,19 @@
 # define WIN_W 1000
 #endif
 
+#ifndef IMG_W 
+# define IMG_W 800
+#endif
+
+#ifndef IMG_H 
+# define IMG_H 800
+#endif
+
+#ifndef SQ_SIZE 
+# define SQ_SIZE 6
+#endif
+
+
 #ifndef STEPS
 # define STEPS 50
 #endif
@@ -28,12 +41,12 @@ typedef struct s_visu
 
 typedef struct s_img
 {
-	void *ptr;
-	int *data;
-	int bits_per_pixel;
-	int h;
-	int w;
-	int endian;
+	void	*ptr;
+	int		*data;
+	int		bits_per_pixel;
+	int		h;
+	int		w;
+	int		endian;
 }	t_img;
 
 typedef struct s_link

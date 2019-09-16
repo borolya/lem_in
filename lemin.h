@@ -1,17 +1,5 @@
 #include "libft.h"
 
-#ifndef IMG_W 
-# define IMG_W 400
-#endif
-
-#ifndef IMG_H 
-# define IMG_H 400
-#endif
-
-#ifndef SQ_SIZE 
-# define SQ_SIZE 7
-#endif
-
 typedef struct s_point
 {
     int x;
@@ -22,8 +10,7 @@ typedef struct s_room
 {
 	int ind;
 	char *name;
-	int x;
-	int y;
+    t_point crd;
 	int start : 1;
 	int finish : 1;
 	int *links_array;
@@ -48,11 +35,9 @@ typedef struct s_farm
 	t_room *finish;
 	t_tree *root;
 	t_room **array_rooms;
-	int max_x;
-	int max_y;
-	int min_x;
-	int min_y;
-	unsigned int **links_tab;// change bit
+    t_point min_crd;
+	t_point max_crd;
+    unsigned int **links_tab;// change bit
 
 } t_farm;
 
