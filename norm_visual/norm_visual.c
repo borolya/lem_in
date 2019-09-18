@@ -5,20 +5,23 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 
-
+#include <stdio.h>
 void initialisation(t_visu *visu)
 {
 	visu->mlx_ptr = mlx_init();
 	visu->win_ptr = mlx_new_window(visu->mlx_ptr, WIN_W, WIN_H, "HEX");
-	
+	visu->links = NULL;
 }
 
 void fill_points(t_link *link)//add ft_abs to lib
 {
-	link->p->x = link->room1->crd.x;
-	link->p->y = link->room1->crd.y;
-	link->delta->x = link->room1->crd.x - link->room2->crd.x / STEPS;
-	link->delta->y = link->room1->crd.y - link->room2->crd.y / STEPS;
+	//printf("r1 = %d, r2 = %d\n", link->room1->crd.x, link->room1->crd.y);
+	
+	link->p.x = link->room1->crd.x;
+	link->p.y = link->room1->crd.y;
+	link->delta.x = (link->room1->crd.x - link->room2->crd.x) / STEPS;
+	link->delta.y = (link->room1->crd.y - link->room2->crd.y) / STEPS;
+
 }
 
 char *handle_str(char *str, t_farm *farm, t_link *link)
@@ -32,25 +35,35 @@ char *handle_str(char *str, t_farm *farm, t_link *link)
 		ft_error("bad_moved");//free all
 	str++;
 	numb = ft_atoi(str);
+	if (numb >= farm->count_aunts)
+		ft_error("bad_aunt_numb\n");
+	//printf("numb = %d\n", numb);
+	tmp = NULL;
 	link->room1 = farm->array_rooms[farm->array_aunts[numb]];
+	//printf("r1 = %s\n", link->room1->name);
 	str = ft_strchr(str, '-');
 	str++;
 	tmp = ft_strchr(str, ' ');
 	if (tmp != NULL)
-		len = str - tmp;
+		len = tmp - str;
 	else
 		len = ft_strlen(str);
 	i = 0;
-	while (!ft_strnequ(str, farm->array_rooms[i++]->name, len))
+	while (!ft_strnequ(str, farm->array_rooms[i]->name, len))
+		i++;
+	
 	if (i < farm->count_rooms)
 		link->room2 = farm->array_rooms[i];
 	else
 		ft_error("aunt go to nowhere");
+	//printf("r2 = %s\n", link->room2->name);
 	fill_points(link);
-	if (tmp != NULL)
+	if (tmp != '\0')
 		tmp++;
+	//printf("r1 = %s, r2 = %s\n", link->room1->name, link->room2->name);
 	return (tmp);
 }
+#include <stdio.h>
 
 int step_init(int keycode, t_visu *visu)
 {
@@ -58,38 +71,49 @@ int step_init(int keycode, t_visu *visu)
 	char *save;
 	char *str;
 	t_list *list;
+	t_link *plink;
 
 	if (keycode == 53)
 	{
 		//free_all;
 		exit(1);
 	}
-	else
+	else if (keycode == 49)
 	{
-		if (get_next_line(0, &str))
+		if (get_next_line(visu->fd, &str))
 		{
+			printf("str = %s\n", str);
 			save = str;
-			while (str == handle_str(str, visu->farm, &link))
+			while (save != NULL)
 			{
+				save = handle_str(save, visu->farm, &link);
 				if (!(list = ft_lstnew(&link, sizeof(t_link))))
 					exit(-1);
 				ft_lstadd(&(visu->links), list);
+				//printf("p = %p\n", visu->links);
 			}
-			free(save);
+			free(str);
+			list = visu->links;
+			while (list != NULL)
+			{
+				plink = list->content;
+				printf("r1 = %s, r2 = %s\n", plink->room1->name, plink->room2->name);
+				list = list->next;
+			}
 			//change count aunt in room
 			visu->step = STEPS;
 		}
 		else 
 			visu->step = 0;
 	}
-    return (0);
+	return (0);
 }
 
 void draw_aunt(t_link *link, t_visu *visu)
 {
-	mlx_put_image_to_window(visu->mlx_ptr, visu->win_ptr, visu->aunt.ptr, link->p->x, link->p->y);
-	link->p->x += link->delta->x;
-	link->p->y = link->delta->y;
+	mlx_put_image_to_window(visu->mlx_ptr, visu->win_ptr, visu->aunt.ptr, link->p.x, link->p.y);
+	link->p.x += link->delta.x;
+	link->p.y = link->delta.y;
 	if (visu->step == 0)
 	{
 		free(link);
@@ -100,7 +124,7 @@ void draw_aunt(t_link *link, t_visu *visu)
 void draw_hex(t_visu *visu)
 {
 	//add list of rooms and aunt
-	mlx_put_image_to_window(visu->mlx_ptr, visu->win_ptr, visu->hex.ptr, 50, 50);
+	mlx_put_image_to_window(visu->mlx_ptr, visu->win_ptr, visu->hex.ptr, 0, 0);
 }
 
 void ft_lstfree(t_list **alst)
@@ -125,7 +149,10 @@ int dinamic(t_visu *visu)
 {
 	t_list *link;
 
+	visu->step = 10;	
 	draw_hex(visu);
+	//mlx_clear_window(visu->mlx_ptr, visu->win_ptr);
+	mlx_put_image_to_window(visu->mlx_ptr, visu->win_ptr, visu->hex.ptr, 0, 0);
 	if (visu->step >= 0)
 	{
 		link = visu->links;
@@ -140,16 +167,16 @@ int dinamic(t_visu *visu)
 		if (visu->step < 0)
 			ft_lstfree(&(visu->links));
 	}
-    return (0);
+	return (0);
 }
 
 void imag_initialisation(t_img *hex, t_img *aunt, t_visu *visu)
 {
 	int i;
 
-	hex->h = IMG_W;
-	hex->w = IMG_H;
-	hex->ptr = mlx_new_image (visu->mlx_ptr, IMG_W, IMG_H);
+	hex->h = HEX_W;
+	hex->w = HEX_H;
+	hex->ptr = mlx_new_image (visu->mlx_ptr, HEX_W, HEX_H);
 	hex->data = (int*)mlx_get_data_addr(hex->ptr, &hex->bits_per_pixel, &hex->h, &hex->endian);
 	hex_img(hex, visu->farm);
 	aunt->h = 5;
@@ -164,24 +191,32 @@ void imag_initialisation(t_img *hex, t_img *aunt, t_visu *visu)
 	}
 }
 
+#include <stdio.h>
+
 int main(int argc, char **argv)
 {
 	t_farm farm;
 	t_visu visu;
 	t_img	aunt;
 	t_img	hex;
-    int fd;
+	int fd;
 
 	if (argc == 1)
 		fd = 0;
 	else
 		fd = open(argv[1], O_RDONLY);
 	read_data(fd, &farm);//add aunts_to room struct//read to \n
-	initialisation(&visu);
+	
+    initialisation(&visu);
+	visu.farm = &farm;
+	visu.fd = fd;
+	visu.step = 100;
+	
+		//write_farm(&farm);
 	imag_initialisation(&hex, &aunt, &visu);
-    visu.aunt = aunt;
+	visu.aunt = aunt;
 	visu.hex = hex;
 	mlx_key_hook(visu.win_ptr, &step_init, &visu);
-	mlx_loop_hook(visu.win_ptr, &dinamic, &visu);
-	mlx_loop(visu.mlx_ptr);
+	mlx_loop_hook(visu.mlx_ptr, &dinamic, &visu);
+ 	mlx_loop(visu.mlx_ptr);
 }

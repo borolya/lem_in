@@ -114,7 +114,7 @@ void read_links(int fd, t_farm *farm, t_command *command)
 	//if (str[0] == '\0')
 	//	free(str);
 }
-/*
+
 #include <stdio.h>
 
 void write_room(t_room *room)
@@ -139,21 +139,22 @@ void write_farm(t_farm *farm)
 	int i;
 
 	i = 0;
-	printf("c_r = %d\n", farm->count_rooms);
+	printf("\nWRITE\ncout_room = %d\n", farm->count_rooms);
 	while (i < farm->count_rooms)
 	{
 		write_room(farm->array_rooms[i]);
 		i++;
 	}
 	i = 0;
-	printf("c_an = %d\n", farm->count_aunts);
+	printf("count_aunt = %d\n", farm->count_aunts);
 	while (i < farm->count_aunts)
 	{
 		printf(" %d ", farm->array_aunts[i]);
 		i++;
 	}
+    printf("\nEND WRITE\n");
 }
-*/
+
 void read_data(int fd, t_farm *farm)
 {
 	char *str;
@@ -174,5 +175,5 @@ void read_data(int fd, t_farm *farm)
 	find_link(str, farm);
 	free(str);
 	read_links(fd, farm, &command);
-	//write_farm(farm);
+	write_farm(farm);
 }

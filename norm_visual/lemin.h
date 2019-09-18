@@ -51,6 +51,9 @@ void	initial_farm_array_rooms(t_farm *farm);
 t_room	*add_room_to_list(t_farm *farm, char *str);
 void	find_link(char *str, t_farm *farm);
 void	take_command(int fd, t_command *command, char *str, t_farm *farm);
+
+void    write_farm(t_farm *farm);
+void    write_room(t_room *room);
 #endif
 
 
