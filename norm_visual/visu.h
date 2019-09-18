@@ -22,7 +22,7 @@
 #endif
 
 #ifndef STEPS
-# define STEPS 100
+# define STEPS 500
 #endif
 
 #include "lemin.h"
@@ -36,6 +36,12 @@ typedef struct s_img
 	int		w;
 	int		endian;
 }	t_img;
+
+typedef struct s_dpoint
+{
+    double x;
+    double y;
+} t_dpoint;
 
 typedef struct s_visu
 {
@@ -54,8 +60,9 @@ typedef struct s_link
 {
 	t_room *room1;
 	t_room *room2;
-	t_point p;
-	t_point delta;
+	t_dpoint p;
+	t_dpoint delta;
+    int numb;
 } t_link;
 
 void	hex_img(t_img *hex, t_farm *farm);
