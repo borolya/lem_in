@@ -2,19 +2,19 @@
 # define VISU_H
 
 #ifndef WIN_H 
-# define WIN_H 1000
+# define WIN_H 1040
 #endif
 
 #ifndef WIN_W 
-# define WIN_W 1000
+# define WIN_W 1040
 #endif
 
 #ifndef HEX_W 
-# define HEX_W 800
+# define HEX_W 1000
 #endif
 
 #ifndef HEX_H 
-# define HEX_H 800
+# define HEX_H 1000
 #endif
 
 #ifndef SQ_SIZE 
@@ -22,11 +22,12 @@
 #endif
 
 #ifndef STEPS
-# define STEPS 500
+# define STEPS 50
 #endif
 
 #include "lemin.h"
 #include "mlx.h"
+
 typedef struct s_img
 {
 	void	*ptr;
@@ -55,7 +56,6 @@ typedef struct s_visu
     int     fd;
 }   t_visu;
 
-
 typedef struct s_link
 {
 	t_room *room1;
@@ -66,4 +66,7 @@ typedef struct s_link
 } t_link;
 
 void	hex_img(t_img *hex, t_farm *farm);
+void	free_visu(t_visu *visu);
+void	free_farm(t_farm *farm);
+void	draw_line(t_point p1, t_point p2, int *img_data);
 #endif

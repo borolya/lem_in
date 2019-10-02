@@ -5,7 +5,6 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 
-#include <stdio.h>
 void initialisation(t_visu *visu)
 {
 	visu->mlx_ptr = mlx_init();
@@ -13,10 +12,8 @@ void initialisation(t_visu *visu)
 	visu->links = NULL;
 }
 
-void fill_points(t_link *link)//add ft_abs to lib
+void fill_points(t_link *link)
 {
-	//printf("r1 = %d, r2 = %d\n", link->room1->crd.x, link->room1->crd.y);
-	
 	link->p.x = (double)link->room1->crd.x;
 	link->p.y = (double)link->room1->crd.y;
 	link->delta.x = (double)(link->room2->crd.x - link->room1->crd.x) / STEPS;
@@ -31,16 +28,14 @@ char *handle_str(char *str, t_farm *farm, t_link *link)
 	char *tmp;
 
 	if (str[0] != 'L')
-		ft_error("bad_moved");//free all
+		ft_error("bad_moved");
 	str++;
-	numb = ft_atoi(str);
+	numb = ft_atoi(str) - 1;
 	link->numb = numb;
 	if (numb >= farm->count_aunts)
 		ft_error("bad_aunt_numb\n");
-	//printf("numb = %d\n", numb);
 	tmp = NULL;
 	link->room1 = farm->array_rooms[farm->array_aunts[numb]];
-	//printf("r1 = %s\n", link->room1->name);
 	str = ft_strchr(str, '-');
 	str++;
 	tmp = ft_strchr(str, ' ');
@@ -51,19 +46,15 @@ char *handle_str(char *str, t_farm *farm, t_link *link)
 	i = 0;
 	while (!ft_strnequ(str, farm->array_rooms[i]->name, len))
 		i++;
-	
 	if (i < farm->count_rooms)
 		link->room2 = farm->array_rooms[i];
 	else
 		ft_error("aunt go to nowhere");
-	//printf("r2 = %s\n", link->room2->name);
 	fill_points(link);
 	if (tmp != '\0')
 		tmp++;
-	//printf("r1 = %s, r2 = %s\n", link->room1->name, link->room2->name);
 	return (tmp);
 }
-#include <stdio.h>
 
 int step_init(int keycode, t_visu *visu)
 {
@@ -75,14 +66,13 @@ int step_init(int keycode, t_visu *visu)
 
 	if (keycode == 53)
 	{
-		//free_all;
+		free_visu(visu);
 		exit(1);
 	}
-	else if (keycode == 49)
+	else if (keycode == 49 && visu->step < 0)
 	{
 		if (get_next_line(visu->fd, &str))
 		{
-			printf("str = %s\n", str);
 			save = str;
 			while (save != NULL)
 			{
@@ -90,18 +80,14 @@ int step_init(int keycode, t_visu *visu)
 				if (!(list = ft_lstnew(&link, sizeof(t_link))))
 					exit(-1);
 				ft_lstadd(&(visu->links), list);
-				//printf("p = %p\n", visu->links);
 			}
 			free(str);
 			list = visu->links;
 			while (list != NULL)
 			{
 				plink = list->content;
-				printf("r1 = %s, r2 = %s x = %f y = %f\n", plink->room1->name, plink->room2->name, plink->p.x, plink->p.y);
-			//	printf("r2x = %d, r2y = %d, dx = %f, dy = %f\n", plink->room2->crd.x, plink->room2->crd.y, plink->delta.x, plink->delta.y);
 				list = list->next;
 			}
-			//change count aunt in room
 			visu->step = STEPS;
 		}
 		else 
@@ -115,51 +101,37 @@ void draw_aunt(t_link *link, t_visu *visu)
 	mlx_put_image_to_window(visu->mlx_ptr, visu->win_ptr, visu->aunt.ptr, link->p.x - SQ_SIZE / 2, link->p.y - SQ_SIZE / 2);
 	link->p.x += link->delta.x;
 	link->p.y += link->delta.y;
-	/*
-	if (visu->step == 0)
-	{
-		free(link);
-		link = NULL;
-	}
-	*/
 }
 
 void draw_hex(t_visu *visu)
 {
-	//add list of rooms and aunt
+	int i;
+	t_room *room;
+	char *str;
+	
 	mlx_put_image_to_window(visu->mlx_ptr, visu->win_ptr, visu->hex.ptr, 0, 0);
-}
-
-void ft_lstfree(t_list **alst)
-{
-	t_list *lst;
-	t_list *next;
-
-	if (alst)
-		return;
-	lst = (*alst);
-	while (lst)
+	i = 0;
+	while (i < visu->farm->count_rooms)
 	{
-		free((t_link*)(lst->content));
-		next = lst->next;
-		free(lst);
-		lst = next;
+		room = visu->farm->array_rooms[i];
+		str = ft_itoa(room->aunts);
+		mlx_string_put(visu->mlx_ptr, visu->win_ptr, room->crd.x - SQ_SIZE / 2, room->crd.y + SQ_SIZE, 100000,
+											str);
+		free(str);
+		i++;
 	}
-	*alst = NULL;
+	
 }
 
 int dinamic(t_visu *visu)
 {
 	t_list	*link;
 	t_link	*content;
-	
+
+	mlx_clear_window(visu->mlx_ptr, visu->win_ptr);
 	draw_hex(visu);
-	//mlx_clear_window(visu->mlx_ptr, visu->win_ptr);
-	//mlx_put_image_to_window(visu->mlx_ptr, visu->win_ptr, visu->hex.ptr, 0, 0);
-	
 	if (visu->step >= 0)
 	{
-		//printf("step = %d\n", visu->step);
 		link = visu->links;
 		mlx_clear_window(visu->mlx_ptr, visu->win_ptr);
 		draw_hex(visu);
@@ -175,10 +147,12 @@ int dinamic(t_visu *visu)
 			while (link != NULL)
 			{	
 				content = link->content;
+				content->room1->aunts--;
+				content->room2->aunts++;
 				visu->farm->array_aunts[content->numb] = content->room2->ind;
 				link = link->next;
 			}
-			ft_lstfree(&(visu->links));
+			ft_lstcontentfree(&(visu->links));
 			visu->links = NULL;
 		}
 	}
@@ -191,7 +165,7 @@ void imag_initialisation(t_img *hex, t_img *aunt, t_visu *visu)
 
 	hex->h = HEX_W;
 	hex->w = HEX_H;
-	hex->ptr = mlx_new_image (visu->mlx_ptr, HEX_W, HEX_H);
+	hex->ptr = mlx_new_image(visu->mlx_ptr, HEX_W, HEX_H);
 	hex->data = (int*)mlx_get_data_addr(hex->ptr, &hex->bits_per_pixel, &hex->h, &hex->endian);
 	hex_img(hex, visu->farm);
 	aunt->h = SQ_SIZE;
@@ -206,8 +180,6 @@ void imag_initialisation(t_img *hex, t_img *aunt, t_visu *visu)
 	}
 }
 
-#include <stdio.h>
-
 int main(int argc, char **argv)
 {
 	t_farm farm;
@@ -220,17 +192,20 @@ int main(int argc, char **argv)
 		fd = 0;
 	else
 		fd = open(argv[1], O_RDONLY);
+	if (fd < 0)
+		exit(-1);
 	read_data(fd, &farm);//add aunts_to room struct//read to \n
-	
 	initialisation(&visu);
 	visu.farm = &farm;
 	visu.fd = fd;
-	visu.step = STEPS;
-	//write_farm(&farm);
+	visu.step = -1;
 	imag_initialisation(&hex, &aunt, &visu);
 	visu.aunt = aunt;
 	visu.hex = hex;
 	mlx_key_hook(visu.win_ptr, &step_init, &visu);
 	mlx_loop_hook(visu.mlx_ptr, &dinamic, &visu);
  	mlx_loop(visu.mlx_ptr);
+	free_visu(&visu);
+	free_farm(&farm);
+	return (0);
 }

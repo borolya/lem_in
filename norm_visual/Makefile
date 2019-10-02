@@ -1,12 +1,15 @@
 NAME = visual
 CC = cc -Wall -Wextra -Werror -g
 SRC = norm_visual.c \
-			norm_read.c \
-			norm_read_room.c \
-			norm_initial.c \
-			norm_read_link.c \
-			norm_check.c \
-			norm_hex_image.c 
+			read.c \
+			read_room.c \
+			initial.c \
+			read_link.c \
+			check.c \
+			norm_hex_image.c \
+			norm_write.c \
+			free.c \
+			norm_draw_line.c
 INCLUDES = -I . \
 			-I ./libft/includes/ \
 			-I ./minilibx_macos
