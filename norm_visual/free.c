@@ -65,4 +65,5 @@ void	free_visu(t_visu *visu)
 	mlx_destroy_image(visu->mlx_ptr, visu->hex.ptr);
 	mlx_destroy_window(visu->mlx_ptr, visu->win_ptr);
 	free_farm(visu->farm);
+	exit(1);
 }
