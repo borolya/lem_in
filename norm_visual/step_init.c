@@ -48,7 +48,7 @@ static char	*room2_in_link(char *str, t_farm *farm, t_link *link)
 static char	*handle_str(char *str, t_farm *farm, t_link *link)
 {
 	if (str[0] != 'L')
-		ft_error("bad_moved");
+		ft_error("bad_moved\n");
 	str++;
 	link->numb = ft_atoi(str) - 1;
 	if (link->numb >= farm->count_aunts)
@@ -75,7 +75,7 @@ int			step_init(int keycode, t_visu *visu)
 		if (get_next_line(visu->fd, &str))
 		{
 			save = str;
-			while (save != NULL)
+			while (save != NULL && save[0] != '\0')
 			{
 				save = handle_str(save, visu->farm, &link);
 				if (!(list = ft_lstnew(&link, sizeof(t_link))))

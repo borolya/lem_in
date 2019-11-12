@@ -71,7 +71,8 @@ int			check_room(char *str)
 
 int			check_comment(char *str)
 {
-	if (str[0] == '#' && (str[1] == '\0' || str[1] != '#'))
+	if (str[0] == '#' && ft_strequ(str, "##start") == 0
+					&& ft_strequ(str, "##end") == 0)
 		return (1);
 	return (0);
 }
